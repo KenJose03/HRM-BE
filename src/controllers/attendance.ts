@@ -1,7 +1,7 @@
 import { Attendance } from "../schema/UserModels";
 import { formatTime } from "../utils/utils";
 
-export const presentAttendance = async (req: any, res: any) => {
+export const loginAttendance = async (req: any, res: any) => {
     const userId = req.params.id;
     const status = req.body.status;
     const today = new Date();
@@ -73,6 +73,23 @@ export const updateAttendance = async (req: any, res: any) => {
     }
     catch (error) {
         res.status(500).json({ message: "Error updating Attendance" });
+    }
+
+    return;
+}
+
+export const getAttendance = async (req: any, res: any) => {
+    const userId = req.params.id;
+    try {
+        const attendance = await Attendance.find({ userId: userId });
+        if (!attendance) {
+            res.status(404).json({ message: "No attendance found" });
+            return;
+        }
+        res.status(200).json(attendance);
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error fetching attendance" });
     }
 
     return;

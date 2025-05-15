@@ -1,6 +1,6 @@
 import { Document } from "../schema/UserModels";
 
-export const postDocument = async (req: any, res: any) => {
+export const postDocumentId = async (req: any, res: any) => {
     const { userId, user_photo, aadhaar_front, aadhaar_back, pan_card } = req.body;
 
 
@@ -51,7 +51,7 @@ export const getDocumentById = async (req: any, res: any) => {
 
 }
 
-export const updateDocument = async (req: any, res: any) => {
+export const updateDocumentId = async (req: any, res: any) => {
     const userId = req.params.id;
     const { user_photo, aadhaar_front, aadhaar_back, pan_card } = req.body;
     try {

@@ -40,23 +40,6 @@ app.use(cookieParser())
 
 app.use("/hr", hrRouter)
 
-app.post('/signin', SignIn);
-
-app.post('/signup', SignUp)
-
-app.post("/logout", (req, res) => {
-    res.clearCookie("access_token", { httpOnly: true, secure: true, sameSite: "strict" }).status(200).json({ message: "Logout successful" })
-    return;
-})
-
-app.get("/users", authMiddleware, getUser)
-
-app.get("/leads", (req, res) => {
-    const userId = req.params;
-    const user = { id: userId, name: "John Doe" };
-    res.json(user);
-})
-
 app.listen(3000, () => {
     main();
     console.log('Server is running on port 3000');

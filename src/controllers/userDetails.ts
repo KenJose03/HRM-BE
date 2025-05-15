@@ -30,15 +30,22 @@ export const postUserDetails = async (req: any, res: any) => {
         datOfJooining,
         dateOfLeaving
     });
-    try {
-        await newUserDetails.save();
-        res.status(201).json(newUserDetails);
-        return;
-    }
-    catch (error) {
-        res.status(500).json({ message: "Error creating user details" });
-        console.log(error);
+    const user = await User.findById(userId);
+    if (!user) {
+        try {
+            await newUserDetails.save();
+            res.status(201).json(newUserDetails);
+            return;
+        }
+        catch (error) {
+            res.status(500).json({ message: "Error creating user details" });
+            console.log(error);
 
+            return;
+        }
+    }
+    else {
+        res.status(400).json({ message: "User already exists" });
         return;
     }
 
@@ -63,40 +70,50 @@ export const getUserDetailsById = async (req: any, res: any) => {
 
     const userId = req.params.id;
 
-    const userDetails = await UserDetails.findOne({ userId: userId });
+    try {
 
-    if (!userDetails) {
+        const userDetails = await UserDetails.findOne({ userId: userId });
+        if (!userDetails) {
 
-        res.status(404).json({ message: "User not found" });
+            res.status(404).json({ message: "User not found" });
 
-        return;
+            return;
+
+        }
+
+        res.status(200).json(userDetails);
 
     }
-
-    res.json(userDetails);
+    catch (error) {
+        res.status(500).json({ message: "Error fetching user details" });
+        return;
+    }
     return;
 }
 
 export const updateUserDetails = async (req: any, res: any) => {
     const userId = req.params.id;
     const user = await User.findById(userId);
+
     if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
     }
-    if ((req as any).isAdmin) {
-        const {
-            fullName,
-            residece,
-            dateOfBirth,
-            fullAddress,
-            designation,
-            empRole,
-            empType,
-            team,
-            address,
-            datOfJooining,
-            dateOfLeaving } = req.body;
+
+    const {
+        fullName,
+        residece,
+        dateOfBirth,
+        fullAddress,
+        designation,
+        empRole,
+        empType,
+        team,
+        address,
+        datOfJooining,
+        dateOfLeaving } = req.body;
+    try {
+
         const updatedUser = await UserDetails.findOneAndUpdate({ userId: userId }, {
             fullName,
             residece,
@@ -112,7 +129,11 @@ export const updateUserDetails = async (req: any, res: any) => {
         }, { new: true });
         res.status(200).json({ message: "User details updated", updatedUser });
     }
-    else {
-        res.status(403).json({ message: "Unauthorized" });
+    catch (error) {
+        res.status(500).json({ message: "Error updating user details" });
+        console.log(error);
+
     }
+
+    return;
 }

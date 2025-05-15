@@ -1,23 +1,40 @@
-import { Contact } from "../schema/UserModels";
+import { Leads } from "../schema/LeadsModel";
+import { Contact, User } from "../schema/UserModels";
 
-export const postContactId = async (req: any, res: any) => {
-    const userId = req.params.id;
-    const { primaryContact,
-        alternateContact,
-        primaryEmergencyContact,
-        alternateEmergencyContact } = req.body;
+export const postLeads = async (req: any, res: any) => {
+    const { contact_person,
+        contact_number,
+        market_niche,
+        service,
+        assigned_to,
+        status
+    } = req.body;
 
-    const newContact = new Contact({
-        userId: userId,
-        primaryContact,
-        alternateContact,
-        primaryEmergencyContact,
-        alternateEmergencyContact
+    const newLeads = new Leads({
+        contact_person,
+        contact_number,
+        market_niche,
+        service,
+        status
     });
 
     try {
 
-        await newContact.save();
+        const existing = await Leads.findOne({ contact_person: contact_person });
+
+        const assigned_id = await User.findOne({ username: assigned_to });
+
+        if (!assigned_id) {
+            res.status(400).json({ message: "Assigned user not found" });
+            return;
+        }
+
+        newLeads.assigned_to = assigned_id._id;
+
+        res.status(400).json({ message: "Leads already exists" });
+        return
+
+        await newLeads.save();
         res.status(200).json({ message: "Contact created successfully" });
     }
     catch (error) {

@@ -45,8 +45,14 @@ export const deleteHoliday = async (req: any, res: any) => {
     const holidayId = req.params.id;
 
     if ((req as any).isAdmin) {
-        await Holiday.findByIdAndDelete(holidayId);
-        res.json({ message: "Holiday deleted successfully" });
+        try {
+            await Holiday.findByIdAndDelete(holidayId);
+            res.json({ message: "Holiday deleted successfully" });
+        }
+        catch (error) {
+            res.status(500).json({ message: "Error deleting holiday" });
+        }
+
     }
     else {
         res.status(403).json({ message: "Unauthorized" });

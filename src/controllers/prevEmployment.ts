@@ -1,7 +1,13 @@
 import { PrevEmployment, SocialLinks, User } from "../schema/UserModels";
 
 export const postPrevEmployment = async (req: any, res: any) => {
-    const { userId, companyName, designation, empType, address, dateOfJoining, dateOfLeaving } = req.body;
+    const userId = req.id;
+    const { companyName, designation, empType, address, dateOfJoining, dateOfLeaving } = req.body;
+    const user = await User.findById(userId);
+    if (user) {
+        res.status(400).json({ message: "User already exists" });
+        return;
+    }
     const newPrevEmployment = new PrevEmployment({
         userId: userId,
         companyName: companyName,
@@ -11,13 +17,22 @@ export const postPrevEmployment = async (req: any, res: any) => {
         dateOfJoining: dateOfJoining,
         dateOfLeaving: dateOfLeaving
     });
-    await newPrevEmployment.save();
-    res.status(201).json({ message: "PrevEmployment created successfully" });
+    try {
+
+        await newPrevEmployment.save();
+        res.status(201).json({ message: "PrevEmployment created successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error creating prev employment" });
+        console.log(error);
+    }
+
+    return;
 }
 
 
 export const getPrevEmploymentById = async (req: any, res: any) => {
-    const userId = req.userId;
+    const userId = req.id;
     const user = await User.findById(userId);
 
     if (!user) {
@@ -38,22 +53,39 @@ export const getPrevEmploymentById = async (req: any, res: any) => {
 }
 
 export const updatePrevEmployment = async (req: any, res: any) => {
-    const userId = req.params.id;
+    const userId = req.id;
     const user = await User.findById(userId);
+    console.log(userId, "userId");
+    console.log(user, "user");
+
     if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
     }
-    if ((req as any).isAdmin) {
-        const { username, email, password } = req.body;
-        const updatedUser = await User.findByIdAndUpdate(userId, {
-            username: username,
-            email: email,
-            password: password
+
+    try {
+        const { companyName,
+            designation,
+            empType,
+            address,
+            dateOfJoining,
+            dateOfLeaving } = req.body;
+
+        const updatedUser = await PrevEmployment.findOneAndUpdate({ userId: userId }, {
+            companyName,
+            designation,
+            empType,
+            address,
+            dateOfJoining,
+            dateOfLeaving
         }, { new: true });
+
         res.json(updatedUser);
+        console.log("Updated User", updatedUser);
+
     }
-    else {
+    catch (error) {
         res.status(403).json({ message: "Unauthorized" });
     }
+    return;
 }

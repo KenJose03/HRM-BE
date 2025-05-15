@@ -1,6 +1,6 @@
 import { SocialLinks, User } from "../schema/UserModels";
 
-export const postSocial = async (req: any, res: any) => {
+export const postSocialById = async (req: any, res: any) => {
     const { userId, fb_link, x_link, linkedin_link } = req.body;
     const newSocial = new SocialLinks({
         fb_link: fb_link,
@@ -42,7 +42,7 @@ export const getSocialById = async (req: any, res: any) => {
 
 }
 
-export const updateSocial = async (req: any, res: any) => {
+export const updateSocialById = async (req: any, res: any) => {
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) {
