@@ -1,7 +1,8 @@
 import { SocialLinks, User } from "../schema/UserModels";
 
 export const postSocialById = async (req: any, res: any) => {
-    const { userId, fb_link, x_link, linkedin_link } = req.body;
+    const userId = req.params.id;
+    const { fb_link, x_link, linkedin_link } = req.body;
     const newSocial = new SocialLinks({
         fb_link: fb_link,
         x_link: x_link,
@@ -17,7 +18,6 @@ export const postSocialById = async (req: any, res: any) => {
         res.status(500).json({ message: "Error creating social links" });
         return;
     }
-
 }
 
 export const getSocialById = async (req: any, res: any) => {
@@ -38,8 +38,6 @@ export const getSocialById = async (req: any, res: any) => {
         res.status(500).json({ message: "Error fetching social links" });
         return;
     }
-
-
 }
 
 export const updateSocialById = async (req: any, res: any) => {

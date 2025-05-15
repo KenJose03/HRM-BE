@@ -36,7 +36,7 @@ router.post("/prevEmployment/:id", authMiddleware, postPrevEmployment);
 router.put("/prevEmployment/:id", authMiddleware, updatePrevEmployment);
 
 
-router.get("/socialLinks/id", authMiddleware, getSocialById)
+router.get("/socialLinks/:id", authMiddleware, getSocialById)
 router.post("/socialLinks/:id", authMiddleware, postSocialById)
 router.put("/socialLinks/:id", authMiddleware, updateSocialById)
 

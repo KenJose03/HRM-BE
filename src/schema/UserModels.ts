@@ -202,7 +202,7 @@ const attendanceSchema = new mongoose.Schema({
     },
     checkOutTime: {
         type: Date,
-        required: true
+        required: false // Made optional so it is not required on check-in
     },
 }, { timestamps: true })
 

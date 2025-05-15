@@ -1,8 +1,8 @@
 import { Document } from "../schema/UserModels";
 
 export const postDocumentId = async (req: any, res: any) => {
-    const { userId, user_photo, aadhaar_front, aadhaar_back, pan_card } = req.body;
-
+    const userId = req.params.id;
+    const { user_photo, aadhaar_front, aadhaar_back, pan_card } = req.body;
 
     const newDocument = new Document({
         userId: userId,
@@ -13,14 +13,12 @@ export const postDocumentId = async (req: any, res: any) => {
     });
 
     try {
-
         await newDocument.save();
         res.status(201).json(newDocument);
     }
     catch (error) {
         res.status(500).json({ message: "Error creating document" });
     }
-
     return;
 }
 

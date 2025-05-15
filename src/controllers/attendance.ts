@@ -8,7 +8,6 @@ export const loginAttendance = async (req: any, res: any) => {
     const dateOnly = new Date(today.setHours(0, 0, 0, 0));
 
     try {
-
         const existing = await Attendance.findOne({ userId: userId, date: dateOnly });
         if (existing) {
             res.status(200).json({ message: "Attendance already marked" });
@@ -19,20 +18,20 @@ export const loginAttendance = async (req: any, res: any) => {
             date: dateOnly,
             checkInTime: today,
         });
-
         if (status !== "Present") {
             newAttendance.status = "Leave";
         }
         else {
             newAttendance.status = "Present"
         }
-        res.status(200).json({ message: "Attendance marked successfully at", });
         await newAttendance.save();
+        console.log('Attendance created:', newAttendance);
+        res.status(200).json({ message: "Attendance marked successfully at" });
     }
-    catch (error) {
-        res.status(500).json({ message: "Error: Attendance not marked", time: formatTime(today) });
+    catch (error: any) {
+        console.error("Attendance save error:", error);
+        res.status(500).json({ message: "Error: Attendance not marked", error: (error as Error).message, time: formatTime(today) });
     }
-
     return;
 }
 
