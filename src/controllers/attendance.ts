@@ -1,71 +1,57 @@
 import { Attendance } from "../schema/UserModels";
-import { formatTime } from "../utils/utils";
+import { formatTime, getISTDateAndStrings } from "../utils/utils";
 
 export const loginAttendance = async (req: any, res: any) => {
     const userId = req.params.id;
-    const status = req.body.status;
-    const today = new Date();
-    const dateOnly = new Date(today.setHours(0, 0, 0, 0));
-
+    const { istDate, dateString, timeString } = getISTDateAndStrings();
     try {
-        const existing = await Attendance.findOne({ userId: userId, date: dateOnly });
+        const existing = await Attendance.findOne({ userId: userId, date: dateString });
         if (existing) {
             res.status(200).json({ message: "Attendance already marked" });
             return;
         }
         const newAttendance = new Attendance({
             userId: userId,
-            date: dateOnly,
-            checkInTime: today,
+            date: dateString, // Store as YYYY-MM-DD string
+            checkInTime: istDate, // Store as IST Date object
+            status: "Present"
         });
-        if (status !== "Present") {
-            newAttendance.status = "Leave";
-        }
-        else {
-            newAttendance.status = "Present"
-        }
         await newAttendance.save();
         console.log('Attendance created:', newAttendance);
-        res.status(200).json({ message: "Attendance marked successfully at" });
+        res.status(200).json({ message: "Attendance marked successfully at", time: timeString });
     }
     catch (error: any) {
         console.error("Attendance save error:", error);
-        res.status(500).json({ message: "Error: Attendance not marked", error: (error as Error).message, time: formatTime(today) });
+        res.status(500).json({ message: "Error: Attendance not marked", error: (error as Error).message, time: timeString });
     }
     return;
 }
 
 export const logoutAttendance = async (req: any, res: any) => {
-
     const userId = req.params.id;
-    const today = new Date();
-    const dateOnly = new Date(today.setHours(0, 0, 0, 0));
+    const { istDate, dateString, timeString } = getISTDateAndStrings();
     try {
-
-        const attendance = await Attendance.findOne({ userId: userId, date: dateOnly, status: "Present" });
+        const attendance = await Attendance.findOne({ userId: userId, date: dateString, status: "Present" });
         if (!attendance) {
             res.status(404).json({ message: "You are absent for today" });
             return;
         }
-
-        attendance.checkOutTime = today;
+        attendance.checkOutTime = istDate;
         await attendance.save();
-        res.status(200).json({ message: "Logout marked successfully at", time: formatTime(today) });
+        res.status(200).json({ message: "Logout marked successfully at", time: timeString });
     }
     catch (error) {
         res.status(500).json({ message: "Error fetching document" });
     }
-
     return;
-
 }
 
 export const updateAttendance = async (req: any, res: any) => {
     const userId = req.params.id;
-    const checkInTime = req.body;
-    const dateOnly = new Date(checkInTime.setHours(0, 0, 0, 0));
+    const { checkInTime } = req.body;
+    const { dateString } = getISTDateAndStrings();
     try {
-        const updatedAttendance = await Attendance.findOneAndUpdate({ userId: userId, date: dateOnly, status: "Present" }, {
+        const updatedAttendance = await Attendance.findOneAndUpdate({ userId: userId, date: dateString, status: "Present" }, {
             checkInTime
         }, { new: true });
         res.status(200).json({ message: "Login time updated successfully", updatedAttendance });
@@ -73,7 +59,6 @@ export const updateAttendance = async (req: any, res: any) => {
     catch (error) {
         res.status(500).json({ message: "Error updating Attendance" });
     }
-
     return;
 }
 
@@ -90,6 +75,5 @@ export const getAttendance = async (req: any, res: any) => {
     catch (error) {
         res.status(500).json({ message: "Error fetching attendance" });
     }
-
     return;
 }

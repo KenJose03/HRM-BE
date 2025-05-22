@@ -10,6 +10,10 @@ import jwt from 'jsonwebtoken';
 import { getUser } from './controllers/user';
 import cookieParser from 'cookie-parser';
 import { SignIn, SignUp } from './controllers/auth';
+import session from "express-session";
+import passport from "passport";
+import authRoutes from "./routes/authRoutes";
+import "./config/passport";
 
 
 dotenv.config();
@@ -37,8 +41,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser())
+app.use(session({ secret: process.env.SESSION_SECRET as string, resave: false, saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/hr", hrRouter)
+app.use("/auth", authRoutes);
 
 app.listen(3000, () => {
     main();

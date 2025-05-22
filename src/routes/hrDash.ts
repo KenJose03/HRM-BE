@@ -10,6 +10,7 @@ import { getDocumentById, postDocumentId, updateDocumentId } from "../controller
 import { getContactById, postContactId, updateContactId } from "../controllers/contact";
 import { getAttendance, loginAttendance, logoutAttendance, updateAttendance } from "../controllers/attendance";
 import { SignIn, SignUp } from "../controllers/auth";
+import { getLeads, getLeadById, postLeads, updateLead, deleteLead } from "../controllers/leads";
 
 const router = Router();
 
@@ -54,15 +55,11 @@ router.post("/attendance/logout/:id", authMiddleware, logoutAttendance);
 router.put("/attendance/:id", authMiddleware, updateAttendance);
 
 
-router.get("/leads", authMiddleware,);
-
-router.post("/lead", authMiddleware, (req: Request, res: Response) => {
-    res.send("Hello World!");
-});
-
-router.put("/lead", authMiddleware, (req: Request, res: Response) => {
-    res.send("Hello World!");
-});
+router.get("/leads", authMiddleware, getLeads);
+router.get("/leads/:id", authMiddleware, getLeadById);
+router.post("/leads", authMiddleware, postLeads);
+router.put("/leads/:id", authMiddleware, updateLead);
+router.delete("/leads/:id", authMiddleware, deleteLead);
 
 
 router.get("/holidays", authMiddleware,);
